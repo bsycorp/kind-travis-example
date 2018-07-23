@@ -3,8 +3,9 @@ services: docker
 language: minimal
 
 script:
-  - docker run --privileged -p 8443:8443 -p 10080:10080 bsycorp/kind:latest-1.9
-  - until curl --fail http://127.0.0.1:10080/kubernetes-ready; do
+  - docker run -d --name kube --privileged -p 8443:8443 -p 10080:10080 bsycorp/kind:latest-1.9
+  - until curl -s --fail http://127.0.0.1:10080/kubernetes-ready; do
       sleep 1;
     done
-  - echo "Kubernetes ready"
+  - echo "Kubernetes ready - run tests!"
+  # deploy things / run tests., when done
