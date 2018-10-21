@@ -3,9 +3,16 @@ services: docker
 language: minimal
 
 script:
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x kubectl
+  - sudo mv kubectl /usr/bin
   - docker run -d --name kube --privileged -p 8443:8443 -p 10080:10080 bsycorp/kind:latest-1.9
   - until curl -s --fail http://127.0.0.1:10080/kubernetes-ready; do
       sleep 1;
     done
   - echo "Kubernetes ready - run tests!"
+  - curl http://127.0.0.1:10080/config > ./kube-config
+  - export KUBECONFIG=./kube-config
+  - kubectl config set clusters.kubernetes.server https://127.0.0.1:8443
+  - kubectl get nodes
   # deploy things / run tests., when done
